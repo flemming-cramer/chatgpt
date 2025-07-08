@@ -1,4 +1,53 @@
 <div class="chat-box">
+  <div class="debug-controls">
+    <button (click)="toggleDebugMode()" class="debug-btn">
+      {{ isDebugMode() ? '🔧 Debug: ON' : '🔧 Debug: OFF' }}
+    </button>
+    <button (click)="clearChat()" class="clear-btn">🧹 Clear Chat</button>
+  </div>
+
+  <div class="chat-messages">
+    <div *ngIf="chatHistory.length === 0" class="welcome-message">
+      <p>👋 Welcome! Ask me anything to get started.</p>
+    </div>
+    
+    <div *ngFor="let msg of chatHistory; let i = index" 
+         class="message" 
+         [ngClass]="{'user-message': msg.role === 'user', 'assistant-message': msg.role === 'assistant', 'system-message': msg.role === 'system'}">
+      <div class="message-header">
+        <strong>{{ msg.role === 'user' ? '👤 You' : msg.role === 'assistant' ? '🤖 Assistant' : '⚠️ System' }}:</strong>
+        <span class="message-index">#{{ i + 1 }}</span>
+      </div>
+      <div class="message-content">{{ msg.content }}</div>
+    </div>
+
+    <div *ngIf="isLoading" class="loading-message">
+      <div class="loading-spinner"></div>
+      <span>🤖 Assistant is thinking...</span>
+    </div>
+  </div>
+
+  <div class="input-section">
+    <div *ngIf="errorMessage" class="error-banner">
+      ⚠️ {{ errorMessage }}
+    </div>
+    
+    <div class="input-group">
+      <input 
+        [(ngModel)]="userMessage" 
+        placeholder="Ask something..." 
+        (keyup.enter)="sendMessage()"
+        [disabled]="isLoading"
+        class="message-input" />
+      <button 
+        (click)="sendMessage()" 
+        [disabled]="isLoading || !userMessage.trim()"
+        class="send-btn">
+        {{ isLoading ? '⏳' : '📤' }} Send
+      </button>
+    </div>
+  </div>
+</div>
   <div *ngFor="let msg of chatHistory">
     <p><strong>{{ msg.role }}:</strong> {{ msg.content }}</p>
   </div>
