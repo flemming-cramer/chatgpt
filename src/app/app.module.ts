@@ -11,7 +11,8 @@ import { ChatComponent } from './components/chat/chat.component';
     ChatComponent
   ],
   imports: [
-    BrowserModule
+    BrowserModule,
+    FormsModule
   ],
   providers: [],
   bootstrap: [AppComponent]
