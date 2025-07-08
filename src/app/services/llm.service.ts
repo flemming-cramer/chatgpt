@@ -3,6 +3,15 @@ import { Injectable } from '@angular/core';
 import { Observable, throwError } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
 
+interface LlmCompletionResponse {
+  choices: Array<{
+    message: {
+      content: string;
+      role: string;
+    };
+  }>;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -12,7 +21,7 @@ export class LlmService {
   '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'; // Store securely in env
   private debugMode = true; // Enable debug logging
   constructor(private http: HttpClient) {}
-  getCompletion(prompt: string): Observable<any> {
+  getCompletion(prompt: string): Observable<LlmCompletionResponse> {
     if (this.debugMode) {
       console.log('🚀 LLM Service: Sending request');
       console.log('📝 Prompt:', prompt);
@@ -35,8 +44,8 @@ export class LlmService {
       console.log('🔑 Headers:', headers.keys());
     }
 
-    return this.http.post(this.apiUrl, body, { headers }).pipe(
-      tap(response => {
+    return this.http.post<LlmCompletionResponse>(this.apiUrl, body, { headers }).pipe(
+      tap((response: LlmCompletionResponse) => {
         if (this.debugMode) {
           console.log('✅ LLM Service: Response received');
           console.log('📨 Response:', response);
