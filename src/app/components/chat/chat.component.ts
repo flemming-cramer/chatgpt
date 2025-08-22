@@ -53,16 +53,18 @@ export class ChatComponent {
   }
 
   private getErrorMessage(error: any): string {
-    if (error.message && error.message.includes('API key is not configured')) {
-      return 'Please configure your OpenAI API key in the environment settings.';
-    } else if (error.status === 401) {
+    if (error.status === 401) {
       return 'Authentication failed. Please check your API key.';
     } else if (error.status === 429) {
       return 'Rate limit exceeded. Please try again later.';
     } else if (error.status === 0) {
       return 'Network error. Please check your internet connection.';
+    } else if (error.status === 500 && error.error?.error?.includes('API key not configured')) {
+      return 'OpenAI API key not configured on server. Please check server configuration.';
     } else if (error.error?.error?.message) {
       return error.error.error.message;
+    } else if (error.error?.error) {
+      return typeof error.error.error === 'string' ? error.error.error : 'Server configuration error';
     } else if (error.message) {
       return error.message;
     } else {
