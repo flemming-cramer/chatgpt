@@ -10,9 +10,6 @@ const PORT = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.json());
 
-// Serve static files from Angular build
-app.use(express.static(path.join(__dirname, 'dist/angular-llm-demo')));
-
 // OpenAI API proxy endpoint
 app.post('/api/chat', async (req, res) => {
   try {
@@ -58,6 +55,9 @@ app.post('/api/chat', async (req, res) => {
     res.status(500).json({ error: 'Internal server error' });
   }
 });
+
+// Serve static files from Angular build
+app.use(express.static(path.join(__dirname, 'dist/angular-llm-demo')));
 
 // Catch all handler for Angular routes
 app.get('*', (req, res) => {
