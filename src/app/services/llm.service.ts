@@ -30,12 +30,15 @@ export class LlmService {
       return throwError(() => new Error(errorMessage));
     }
 
+    // Note: Direct calls to OpenAI API from browser may face CORS issues
+    // In production, consider using a backend proxy or serverless function
     if (this.debugMode) {
       console.log('🚀 LLM Service: Sending request');
       console.log('📝 Prompt:', prompt);
       console.log('🔗 API URL:', this.apiUrl);
       console.log('🔑 API Key configured:', this.apiKey ? 'Yes' : 'No');
       console.log('🔑 API Key length:', this.apiKey ? this.apiKey.length : 0);
+      console.log('⚠️ Note: Browser-based API calls may face CORS restrictions');
     }
 
     const headers = new HttpHeaders({
