@@ -40,30 +40,50 @@ app.post('/api/chat', async (req, res) => {
     }
 
     const apiKey = process.env.OPENAI_API_KEY;
-    if (!apiKey) {
-      return res.status(500).json({ error: 'OpenAI API key not configured on server' });
+    if (!apiKey || apiKey === 'your-actual-openai-api-key-here') {
+      console.error('❌ OpenAI API key not configured properly');
+      return res.status(500).json({ 
+        error: 'OpenAI API key not configured on server. Please add your API key to the .env file.' 
+      });
     }
 
     console.log('🚀 Server: Proxying request to OpenAI');
     console.log('💭 Message:', message);
 
-    const response = await fetch('https://api.openai.com/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${apiKey}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        model: 'gpt-3.5-turbo',
-        messages: [{ role: 'user', content: message }],
-        temperature: 0.7
-      })
-    });
+    let response;
+    try {
+      response = await fetch('https://api.openai.com/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${apiKey}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          model: 'gpt-3.5-turbo',
+          messages: [{ role: 'user', content: message }],
+          temperature: 0.7
+        })
+      });
+    } catch (fetchError) {
+      console.error('❌ Network error connecting to OpenAI:', fetchError.message);
+      return res.status(500).json({ 
+        error: 'Failed to connect to OpenAI API. Please check your internet connection and API key.' 
+      });
+    }
 
     if (!response.ok) {
       const errorData = await response.json();
       console.error('❌ OpenAI API Error:', errorData);
-      return res.status(response.status).json({ error: errorData });
+      
+      if (response.status === 401) {
+        return res.status(401).json({ 
+          error: 'Invalid OpenAI API key. Please check your API key in the .env file.' 
+        });
+      }
+      
+      return res.status(response.status).json({ 
+        error: errorData.error?.message || 'OpenAI API error' 
+      });
     }
 
     const data = await response.json();
@@ -72,7 +92,9 @@ app.post('/api/chat', async (req, res) => {
     res.json(data);
   } catch (error) {
     console.error('❌ Server Error:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    res.status(500).json({ 
+      error: 'Internal server error: ' + error.message 
+    });
   }
 });
 
@@ -86,5 +108,11 @@ app.get('*', (req, res) => {
 
 app.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);
-  console.log(`🔑 OpenAI API Key configured: ${process.env.OPENAI_API_KEY ? 'Yes' : 'No'}`);
+  const apiKeyConfigured = process.env.OPENAI_API_KEY && process.env.OPENAI_API_KEY !== 'your-actual-openai-api-key-here';
+  console.log(`🔑 OpenAI API Key configured: ${apiKeyConfigured ? 'Yes' : 'No'}`);
+  
+  if (!apiKeyConfigured) {
+    console.log('⚠️  Please add your OpenAI API key to the .env file to enable chat functionality');
+    console.log('   Get your API key from: https://platform.openai.com/api-keys');
+  }
 });
