@@ -8,7 +8,16 @@
 
   <div class="chat-messages">
     <div *ngIf="chatHistory.length === 0" class="welcome-message">
-      <p>👋 Welcome! Ask me anything to get started.</p>
+      <div class="setup-instructions">
+        <h3>🚀 Setup Required</h3>
+        <p>To use this chat demo, you need to configure your OpenAI API key:</p>
+        <ol>
+          <li>Get an API key from <a href="https://platform.openai.com/api-keys" target="_blank">OpenAI Platform</a></li>
+          <li>Add it to <code>src/environments/environment.ts</code></li>
+          <li>Restart the development server</li>
+        </ol>
+        <p>Once configured, you can ask me anything! 💬</p>
+      </div>
     </div>
     
     <div *ngFor="let msg of chatHistory; let i = index" 

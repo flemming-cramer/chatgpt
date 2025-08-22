@@ -2,6 +2,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, throwError } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
+import { environment } from '../../environments/environment';
 
 interface LlmCompletionResponse {
   choices: Array<{
@@ -17,15 +18,24 @@ interface LlmCompletionResponse {
 })
 export class LlmService {
   private apiUrl = 'https://api.openai.com/v1/chat/completions';
-  private apiKey = 
-  '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'; // Store securely in env
+  private apiKey = environment.openaiApiKey;
   private debugMode = true; // Enable debug logging
+
   constructor(private http: HttpClient) {}
   getCompletion(prompt: string): Observable<LlmCompletionResponse> {
+    // Check if API key is configured
+    if (!this.apiKey || this.apiKey.trim() === '') {
+      const errorMessage = 'OpenAI API key is not configured. Please add your API key to the environment configuration.';
+      console.error('❌ LLM Service:', errorMessage);
+      return throwError(() => new Error(errorMessage));
+    }
+
     if (this.debugMode) {
       console.log('🚀 LLM Service: Sending request');
       console.log('📝 Prompt:', prompt);
       console.log('🔗 API URL:', this.apiUrl);
+      console.log('🔑 API Key configured:', this.apiKey ? 'Yes' : 'No');
+      console.log('🔑 API Key length:', this.apiKey ? this.apiKey.length : 0);
     }
 
     const headers = new HttpHeaders({
@@ -34,7 +44,7 @@ export class LlmService {
     });
 
     const body = {
-      model: 'gpt-4',
+      model: 'gpt-3.5-turbo', // Using more cost-effective model
       messages: [{ role: 'user', content: prompt }],
       temperature: 0.7
     };
