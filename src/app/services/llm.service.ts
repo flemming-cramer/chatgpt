@@ -16,7 +16,7 @@ interface LlmCompletionResponse {
   providedIn: 'root'
 })
 export class LlmService {
-  private apiUrl = 'http://localhost:3000/api/chat'; // Use our backend proxy
+  private apiUrl = '/api/chat'; // Use relative URL to current domain
   private debugMode = true; // Enable debug logging
 
   constructor(private http: HttpClient) {}
