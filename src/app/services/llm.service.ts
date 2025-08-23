@@ -16,7 +16,7 @@ interface LlmCompletionResponse {
   providedIn: 'root'
 })
 export class LlmService {
-  private apiUrl = '/api/chat'; // Use relative URL to current domain
+  private apiUrl = '/api/chat';
   private debugMode = true; // Enable debug logging
 
   constructor(private http: HttpClient) {}
