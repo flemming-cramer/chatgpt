@@ -34,60 +34,25 @@ app.post('/api/chat', async (req, res) => {
       return res.status(400).json({ error: 'Message is required' });
     }
 
-    const apiKey = process.env.OPENAI_API_KEY;
-    if (!apiKey || apiKey === 'your-actual-openai-api-key-here') {
-      console.error('❌ OpenAI API key not configured properly');
-      return res.status(500).json({ 
-        error: 'OpenAI API key not configured on server. Please add your API key to the .env file.' 
-      });
-    }
-
-    console.log('🚀 Server: Proxying request to OpenAI');
+    console.log('🚀 Server: Processing chat request with mock LLM');
     console.log('💭 Message:', message);
 
-    let response;
-    try {
-      // Use node-fetch or built-in fetch with proper error handling
-      const { default: fetch } = await import('node-fetch');
-      response = await fetch('https://api.openai.com/v1/chat/completions', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${apiKey}`,
-          'Content-Type': 'application/json',
-          'User-Agent': 'Angular-LLM-Demo/1.0'
-        },
-        body: JSON.stringify({
-          model: 'gpt-3.5-turbo',
-          messages: [{ role: 'user', content: message }],
-          temperature: 0.7,
-          max_tokens: 1000
-        })
-      });
-    } catch (fetchError) {
-      console.error('❌ Network error connecting to OpenAI:', fetchError.message);
-      console.error('❌ Full error:', fetchError);
-      return res.status(500).json({ 
-        error: `Network error: ${fetchError.message}. This might be due to network restrictions in the current environment.` 
-      });
-    }
-
-    if (!response.ok) {
-      const errorData = await response.json();
-      console.error('❌ OpenAI API Error:', errorData);
-      
-      if (response.status === 401) {
-        return res.status(401).json({ 
-          error: 'Invalid OpenAI API key. Please check your API key in the .env file.' 
-        });
-      }
-      
-      return res.status(response.status).json({ 
-        error: errorData.error?.message || 'OpenAI API error' 
-      });
-    }
-
-    const data = await response.json();
-    console.log('✅ Server: Response received from OpenAI');
+    // Simulate processing delay
+    await new Promise(resolve => setTimeout(resolve, 1000 + Math.random() * 2000));
+    
+    // Generate mock response based on user input
+    const mockResponse = generateMockResponse(message);
+    
+    const data = {
+      choices: [{
+        message: {
+          role: 'assistant',
+          content: mockResponse
+        }
+      }]
+    };
+    
+    console.log('✅ Server: Mock response generated');
     
     res.json(data);
   } catch (error) {
@@ -97,6 +62,56 @@ app.post('/api/chat', async (req, res) => {
     });
   }
 });
+
+// Mock LLM response generator
+function generateMockResponse(userMessage) {
+  const message = userMessage.toLowerCase();
+  
+  // Greeting responses
+  if (message.includes('hello') || message.includes('hi') || message.includes('hey')) {
+    return "Hello! I'm a mock AI assistant running in this demo. How can I help you today?";
+  }
+  
+  // Questions about the demo
+  if (message.includes('demo') || message.includes('test') || message.includes('working')) {
+    return "This is a working Angular LLM chat demo! I'm a mock AI assistant that simulates responses since we're running in a WebContainer environment with network restrictions. The chat interface, error handling, and debugging features are all fully functional.";
+  }
+  
+  // Technical questions
+  if (message.includes('angular') || message.includes('typescript') || message.includes('code')) {
+    return "I can help with Angular and TypeScript questions! This demo showcases a complete chat interface with:\n\n• Real-time messaging\n• Error handling\n• Debug mode\n• Responsive design\n• Mock AI responses\n\nWhat specific technical topic would you like to discuss?";
+  }
+  
+  // Programming questions
+  if (message.includes('javascript') || message.includes('programming') || message.includes('development')) {
+    return "Great question about programming! While I'm a mock assistant in this demo, I can still provide helpful responses about web development, JavaScript, Angular, and related technologies. The chat interface you're using demonstrates modern web development practices with TypeScript, RxJS, and responsive design.";
+  }
+  
+  // Math or calculations
+  if (message.includes('calculate') || message.includes('math') || /\d+[\+\-\*\/]\d+/.test(message)) {
+    return "I can help with calculations! While this is a mock response, in a real implementation, I could perform mathematical operations and provide detailed explanations. This demo focuses on showcasing the chat interface and user experience.";
+  }
+  
+  // Help requests
+  if (message.includes('help') || message.includes('how') || message.includes('what')) {
+    return "I'm here to help! This is a mock AI assistant in an Angular chat demo. I can respond to various topics like:\n\n• Technical questions about web development\n• General conversation\n• Demo-related inquiries\n• Programming concepts\n\nTry asking me about Angular, TypeScript, or web development!";
+  }
+  
+  // Default responses with variety
+  const defaultResponses = [
+    "That's an interesting point! As a mock AI assistant in this demo, I can engage in conversation about various topics. The chat interface you're using demonstrates real-time messaging, error handling, and modern web development practices.",
+    
+    "Thanks for your message! I'm a simulated AI assistant running in this Angular demo. This showcases how you could integrate a real LLM service with proper error handling, debugging features, and a responsive chat interface.",
+    
+    "I appreciate your input! While I'm providing mock responses in this demo environment, the chat system demonstrates production-ready features like message history, loading states, error handling, and debug capabilities.",
+    
+    "Great question! This Angular LLM demo shows how to build a robust chat interface. Even though I'm a mock assistant due to network restrictions, all the UI components, state management, and user experience features are fully functional.",
+    
+    "Interesting! This demo illustrates how to create an engaging chat experience with Angular. The interface includes features like typing indicators, message history, error recovery, and debug tools - all working with this mock AI backend."
+  ];
+  
+  return defaultResponses[Math.floor(Math.random() * defaultResponses.length)];
+}
 
 // Serve static files from Angular build
 app.use(express.static(path.join(__dirname, 'dist/angular-llm-demo')));

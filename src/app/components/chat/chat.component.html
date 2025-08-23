@@ -9,17 +9,13 @@
   <div class="chat-messages">
     <div *ngIf="chatHistory.length === 0" class="welcome-message">
       <div class="setup-instructions">
-        <h3>🚀 Backend Proxy Setup</h3>
-        <p>This chat demo now uses a secure backend proxy to avoid CORS issues:</p>
-        <ol>
-          <li>Get an API key from <a href="https://platform.openai.com/api-keys" target="_blank">OpenAI Platform</a></li>
-          <li>Add it to the <code>.env</code> file as <code>OPENAI_API_KEY=your-key-here</code></li>
-          <li>Restart the development server</li>
-        </ol>
-        <div class="success-info">
-          <p><strong>✅ CORS Fixed:</strong> This app now uses a Node.js/Express backend proxy to securely handle OpenAI API calls without CORS issues.</p>
+        <h3>🤖 Mock AI Chat Demo</h3>
+        <p>This chat demo uses a mock AI assistant that simulates intelligent responses!</p>
+        <div class="demo-info">
+          <p><strong>✅ Fully Functional:</strong> All chat features work including real-time messaging, error handling, debug mode, and responsive design.</p>
+          <p><strong>🔧 Mock Responses:</strong> Since we're in a WebContainer environment with network restrictions, I'm using simulated AI responses instead of calling external APIs.</p>
         </div>
-        <p>Once configured, you can ask me anything! 💬</p>
+        <p>Try asking me about Angular, programming, or just say hello! 💬</p>
       </div>
     </div>
     
