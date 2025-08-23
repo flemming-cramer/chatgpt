@@ -47,22 +47,27 @@ app.post('/api/chat', async (req, res) => {
 
     let response;
     try {
+      // Use node-fetch or built-in fetch with proper error handling
+      const { default: fetch } = await import('node-fetch');
       response = await fetch('https://api.openai.com/v1/chat/completions', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${apiKey}`,
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          'User-Agent': 'Angular-LLM-Demo/1.0'
         },
         body: JSON.stringify({
           model: 'gpt-3.5-turbo',
           messages: [{ role: 'user', content: message }],
-          temperature: 0.7
+          temperature: 0.7,
+          max_tokens: 1000
         })
       });
     } catch (fetchError) {
       console.error('❌ Network error connecting to OpenAI:', fetchError.message);
+      console.error('❌ Full error:', fetchError);
       return res.status(500).json({ 
-        error: 'Failed to connect to OpenAI API. Please check your internet connection and API key.' 
+        error: `Network error: ${fetchError.message}. This might be due to network restrictions in the current environment.` 
       });
     }
 
