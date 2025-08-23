@@ -75,7 +75,8 @@
               "browserTarget": "angular-llm-demo:build:production"
             },
             "development": {
-              "browserTarget": "angular-llm-demo:build:development"
+              "browserTarget": "angular-llm-demo:build:development",
+              "proxyConfig": "proxy.conf.json"
             }
           },
           "defaultConfiguration": "development"
